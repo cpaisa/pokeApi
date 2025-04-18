@@ -1,0 +1,30 @@
+body {
+    box-sizing: border-box;
+    font-family: 'Times New Roman', Times, serif;
+    width: 100%;
+    margin: 0px;
+}
+
+.card {
+    width: 20%;
+    padding: 20px;
+}
+
+.card-section {
+    background-color: aqua;
+    padding: 20px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+}
+.card-search{
+margin: 10px 0px;
+display: flex;
+justify-content: center;
+}
+.card-search input{
+    padding: 10px;
+    border-radius: 12px;
+    width: 30%;
+    border: 1px solid #ccc;
+}
+
