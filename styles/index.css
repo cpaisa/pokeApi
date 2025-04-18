@@ -70,7 +70,7 @@ body {
     margin: 2% 0px;
 }
 
-.card-button button {
+button{
     padding: 10px 20px;
     margin: 10px;
     cursor: pointer;
@@ -79,7 +79,7 @@ body {
     border: 1px solid #ccc;
 }
 
-.card-button button:hover {
+button:hover {
     background-color: rgb(137, 158, 160);
     transition: all 0.3s ease-in-out;
     color: #fff;

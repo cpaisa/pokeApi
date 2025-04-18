@@ -69,8 +69,16 @@ const paginationBack = () => {
   });
 };
 
+const searchButton =() =>{
+  const buttonseach = document.getElementById("button_nuevo");
+  buttonseach.addEventListener("click",() => {
+    alert("funciona")
+  })
+}
 document.addEventListener("DOMContentLoaded", () => {
   paginationNext();
   paginationBack();
   getTaks();
+  searchButton();
 });
+
