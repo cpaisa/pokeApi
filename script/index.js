@@ -2,6 +2,7 @@ let offset = 0; // desde dónde empezamos
 const limit = 20; // cuántos Pokémon por página
 
 const getTaks = () => {
+  showLoader();
   fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`)
     .then((response) => response.json())
     .then((data) => {
@@ -9,19 +10,25 @@ const getTaks = () => {
       container.innerHTML = ""; // limpiamos el contenido anterior
 
       if (data.results) {
-        data.results.forEach((pokemon) => {
-          fetch(pokemon.url)
-            .then((res) => res.json())
-            .then((pokeData) => {
-              createCard(pokeData);
-            });
-        });
+        const promises = data.results.map((pokemon) =>
+          fetch(pokemon.url).then((res) => res.json())
+        );
+
+        Promise.all(promises)
+          .then((pokemons) => {
+            pokemons.forEach(createCard);
+            hideLoader();
+          });
+      } else {
+        hideLoader();
       }
     })
     .catch((error) => {
       console.error("Error en la petición:", error);
+      hideLoader();
     });
 };
+
 
 const createCard = (pokemon) => {
   const container = document.querySelector(".card");
@@ -68,17 +75,70 @@ const paginationBack = () => {
     }
   });
 };
+const searchButton = () => {
+  const buttonSearch = document.getElementById("button_nuevo");
+  const valueInput = document.getElementById("search_pokemon");
 
-const searchButton =() =>{
-  const buttonseach = document.getElementById("button_nuevo");
-  buttonseach.addEventListener("click",() => {
-    alert("funciona")
-  })
-}
+  buttonSearch.addEventListener("click", async () => {
+    const searchText = valueInput.value.toLowerCase().trim();
+    const container = document.querySelector(".card");
+
+    if (!searchText) {
+      getTaks();
+      return;
+    }
+
+    container.innerHTML = ""; // Limpiar resultados anteriores
+    showLoader();
+
+    try {
+      const response = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=10000`);
+      const data = await response.json();
+
+      const filtered = data.results.filter(pokemon =>
+        pokemon.name.startsWith(searchText)
+      );
+
+      if (filtered.length === 0) {
+        const errorMsg = document.createElement("p");
+        errorMsg.textContent = "No se encontraron Pokémon que coincidan.";
+        errorMsg.style.color = "red";
+        container.appendChild(errorMsg);
+        hideLoader();
+        return;
+      }
+
+      const promises = filtered.map(poke =>
+        fetch(poke.url).then(res => res.json())
+      );
+
+      const results = await Promise.all(promises);
+      results.forEach(createCard);
+      hideLoader();
+
+    } catch (error) {
+      console.error("Error en la búsqueda:", error);
+      const errorMsg = document.createElement("p");
+      errorMsg.textContent = "Ocurrió un error al buscar Pokémon.";
+      errorMsg.style.color = "red";
+      container.appendChild(errorMsg);
+      hideLoader();
+    }
+  });
+};
+
+
+const showLoader = () => {
+  document.getElementById("loader").classList.remove("hidden");
+};
+
+const hideLoader = () => {
+  document.getElementById("loader").classList.add("hidden");
+};
+
 document.addEventListener("DOMContentLoaded", () => {
   paginationNext();
   paginationBack();
   getTaks();
   searchButton();
 });
-
